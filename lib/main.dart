@@ -43,10 +43,14 @@ class MyHomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFFAC9D71).withOpacity(opacity),
-        leading: IconButton(
-          icon: const Icon(Icons.menu, color: Colors.white), // Change the icon color to white
-          onPressed: () {
-            Scaffold.of(context).openDrawer(); // Open the drawer
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(Icons.menu, color: Colors.white), // Change the icon color to white
+              onPressed: () {
+                Scaffold.of(context).openDrawer(); // Open the drawer
+              },
+            );
           },
         ),
         title: Row(
