@@ -37,17 +37,25 @@ class TextBloc extends Bloc<TextEvent, TextState> {
   }
 
   Future<void> _onTextFetched(TextFetched event, Emitter<TextState> emit) async {
-    emit(TextLoadInProgress());
-    try {
-      // Replace this with actual data fetching logic
-      final text1 = 'Headline 1\n\n${List.generate(100, (index) => 'This is line $index of text 1.').join('\n')}';
-      final text2 = 'Headline 2\n\n${List.generate(100, (index) => 'This is line $index of text 2.').join('\n')}';
+  emit(TextLoadInProgress());
+  try {
+    
+    
+    // Replace this with actual data fetching logic
+    final text1 = '''
+${List.generate(50, (index) => 'This is line $index of text 1.').join('\n')}
+    ''';
 
-      emit(TextLoadSuccess(text1: text1, text2: text2));
-    } catch (_) {
-      emit(TextLoadFailure());
-    }
+    final text2 = '''
+${List.generate(50, (index) => 'This is line $index of text 2.').join('\n')}
+    ''';
+
+    emit(TextLoadSuccess(text1: text1, text2: text2));
+  } catch (_) {
+    emit(TextLoadFailure());
   }
+}
+
 
   void _onText1Selected(Text1Selected event, Emitter<TextState> emit) {
     final currentState = state;
