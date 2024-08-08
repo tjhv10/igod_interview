@@ -58,50 +58,61 @@ class MyHomePage extends StatelessWidget {
           ],
         ),
       ),
-      drawer: Drawer(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFAC9D71).withOpacity(opacity),
-                  shape: const CircleBorder(),
-                  padding: const EdgeInsets.all(50),
+      drawer: BlocBuilder<TextBloc, TextState>(
+        builder: (context, state) {
+          final isText1Selected = state is TextLoadSuccess && !state.isText2Selected;
+          final isText2Selected = state is TextLoadSuccess && state.isText2Selected;
+
+          return Drawer(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: isText1Selected
+                          ? const Color(0xFFAC9D71).withOpacity(1)
+                          : const Color(0xFFAC9D71).withOpacity(0.42),
+                      shape: const CircleBorder(),
+                      padding: const EdgeInsets.all(50),
+                    ),
+                    child: const Text('1', style: TextStyle(fontSize: 48, color: Colors.white)),
+                    onPressed: () {
+                      context.read<TextBloc>().add(Text1Selected());
+                      Navigator.pop(context);
+                    },
+                  ),
                 ),
-                child: const Text('1', style: TextStyle(fontSize: 48, color: Colors.white)),
-                onPressed: () {
-                  context.read<TextBloc>().add(Text1Selected());
-                  Navigator.pop(context);
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFAC9D71).withOpacity(opacity),
-                  shape: const CircleBorder(),
-                  padding: const EdgeInsets.all(50),
+                Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: isText2Selected
+                          ? const Color(0xFFAC9D71).withOpacity(1)
+                          : const Color(0xFFAC9D71).withOpacity(0.42),
+                      shape: const CircleBorder(),
+                      padding: const EdgeInsets.all(50),
+                    ),
+                    child: const Text('2', style: TextStyle(fontSize: 48, color: Colors.white)),
+                    onPressed: () {
+                      context.read<TextBloc>().add(Text2Selected());
+                      Navigator.pop(context);
+                    },
+                  ),
                 ),
-                child: const Text('2', style: TextStyle(fontSize: 48, color: Colors.white)),
-                onPressed: () {
-                  context.read<TextBloc>().add(Text2Selected());
-                  Navigator.pop(context);
-                },
-              ),
+              ],
             ),
-          ],
-        ),
+          );
+        },
       ),
       body: BlocBuilder<TextBloc, TextState>(
         builder: (context, state) {
           if (state is TextLoadInProgress) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is TextLoadSuccess) {
-            final textStyle = const TextStyle(fontSize: 16);
-            final headlineStyle = const TextStyle(fontSize: 36, fontWeight: FontWeight.bold);
+            const textStyle = TextStyle(fontSize: 16);
+            const headlineStyle = TextStyle(fontSize: 36, fontWeight: FontWeight.bold);
 
             return SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
@@ -110,15 +121,11 @@ class MyHomePage extends StatelessWidget {
                   children: [
                     TextSpan(
                       text: state.isText2Selected ? 'Headline 2\n\n' : 'Headline 1\n\n',
-                      style:headlineStyle ,
-                      children: <TextSpan>[
-                        TextSpan(
-                          text: state.isText2Selected
-                          ? state.text2
-                          : state.text1,
-                          style: textStyle,
-                        ),
-                      ],
+                      style: headlineStyle,
+                    ),
+                    TextSpan(
+                      text: state.isText2Selected ? state.text2 : state.text1,
+                      style: textStyle,
                     ),
                   ],
                 ),
