@@ -43,6 +43,12 @@ class MyHomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFFAC9D71).withOpacity(opacity),
+        leading: IconButton(
+          icon: const Icon(Icons.menu, color: Colors.white), // Change the icon color to white
+          onPressed: () {
+            Scaffold.of(context).openDrawer(); // Open the drawer
+          },
+        ),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -64,44 +70,47 @@ class MyHomePage extends StatelessWidget {
           final isText2Selected = state is TextLoadSuccess && state.isText2Selected;
 
           return Drawer(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: isText1Selected
-                          ? const Color(0xFFAC9D71).withOpacity(1)
-                          : const Color(0xFFAC9D71).withOpacity(0.42),
-                      shape: const CircleBorder(),
-                      padding: const EdgeInsets.all(50),
+            child: Container(
+              color: Colors.white, // Set the drawer background color to white
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isText1Selected
+                            ? const Color(0xFFAC9D71).withOpacity(1)
+                            : const Color(0xFFAC9D71).withOpacity(0.42),
+                        shape: const CircleBorder(),
+                        padding: const EdgeInsets.all(50),
+                      ),
+                      child: const Text('1', style: TextStyle(fontSize: 48, color: Colors.white)),
+                      onPressed: () {
+                        context.read<TextBloc>().add(Text1Selected());
+                        Navigator.pop(context);
+                      },
                     ),
-                    child: const Text('1', style: TextStyle(fontSize: 48, color: Colors.white)),
-                    onPressed: () {
-                      context.read<TextBloc>().add(Text1Selected());
-                      Navigator.pop(context);
-                    },
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: isText2Selected
-                          ? const Color(0xFFAC9D71).withOpacity(1)
-                          : const Color(0xFFAC9D71).withOpacity(0.42),
-                      shape: const CircleBorder(),
-                      padding: const EdgeInsets.all(50),
+                  Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isText2Selected
+                            ? const Color(0xFFAC9D71).withOpacity(1)
+                            : const Color(0xFFAC9D71).withOpacity(0.42),
+                        shape: const CircleBorder(),
+                        padding: const EdgeInsets.all(50),
+                      ),
+                      child: const Text('2', style: TextStyle(fontSize: 48, color: Colors.white)),
+                      onPressed: () {
+                        context.read<TextBloc>().add(Text2Selected());
+                        Navigator.pop(context);
+                      },
                     ),
-                    child: const Text('2', style: TextStyle(fontSize: 48, color: Colors.white)),
-                    onPressed: () {
-                      context.read<TextBloc>().add(Text2Selected());
-                      Navigator.pop(context);
-                    },
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },
