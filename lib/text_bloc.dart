@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:xml/xml.dart';
+import 'package:html/parser.dart' as html_parser; 
 
 /// [TextEvent]
 /// -------------
@@ -75,10 +76,13 @@ class TextBloc extends Bloc<TextEvent, TextState> {
         final items = document.findAllElements('item');
 
         if (items.isNotEmpty) {
-          final text1 = items.elementAt(0).findElements('description').first.text;
-          final text2 = items.length > 1
-              ? items.elementAt(1).findElements('description').first.text
-              : 'No second item in the RSS feed';
+          final text1Url = items.elementAt(0).findElements('link').first.text;
+          final text2Url = items.length > 1
+              ? items.elementAt(1).findElements('link').first.text
+              : null;
+
+          final text1 = await _fetchFullArticleContent(text1Url);
+          final text2 = text2Url != null ? await _fetchFullArticleContent(text2Url) : 'No second item in the RSS feed';
 
           emit(TextLoadSuccess(text1: text1, text2: text2));
         } else {
@@ -89,6 +93,28 @@ class TextBloc extends Bloc<TextEvent, TextState> {
       }
     } catch (e) {
       emit(TextLoadFailure());
+    }
+  }
+
+  /// [_fetchFullArticleContent]
+  /// -------------
+  /// Fetches the full article content from the given URL.
+  Future<String> _fetchFullArticleContent(String? url) async {
+    if (url == null) return 'No content available';
+
+    try {
+      final articleResponse = await http.get(Uri.parse(url));
+
+      if (articleResponse.statusCode == 200) {
+        final document = html_parser.parse(articleResponse.body);
+        final content = document.querySelector('article')?.text ?? 'No content available';
+
+        return content;
+      } else {
+        return 'Failed to fetch article content';
+      }
+    } catch (e) {
+      return 'Failed to fetch article content';
     }
   }
 
