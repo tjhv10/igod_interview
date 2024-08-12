@@ -9,6 +9,10 @@ void main() {
   runApp(const MyApp());
 }
 
+/// [MyApp]
+/// -------------
+/// The main application widget. It sets up the theme
+/// and provides the main home page with necessary blocs.
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -34,19 +38,25 @@ class MyApp extends StatelessWidget {
   }
 }
 
+/// [MyHomePage]
+/// -------------
+/// The main home page widget that displays the content based on
+/// the selected text and handles UI interactions.
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
 
+  // Constant value for opacity
+  static const double OPACITY = 0.58;
+
   @override
   Widget build(BuildContext context) {
-    const double opacity = 0.58;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFFAC9D71).withOpacity(opacity),
+        backgroundColor: const Color(0xFFAC9D71).withOpacity(OPACITY),
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
-              icon: const Icon(Icons.menu, color: Colors.white), // Change the icon color to white
+              icon: const Icon(Icons.menu, color: Colors.white), // White icon color
               onPressed: () {
                 Scaffold.of(context).openDrawer(); // Open the drawer
               },
@@ -68,88 +78,101 @@ class MyHomePage extends StatelessWidget {
           ],
         ),
       ),
-      drawer: BlocBuilder<TextBloc, TextState>(
-        builder: (context, state) {
-          final isText1Selected = state is TextLoadSuccess && !state.isText2Selected;
-          final isText2Selected = state is TextLoadSuccess && state.isText2Selected;
+      drawer: _buildDrawer(context),
+      body: _buildBody(context),
+    );
+  }
 
-          return Drawer(
-            child: Container(
-              color: Colors.white, // Set the drawer background color to white
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: isText1Selected
-                            ? const Color(0xFFAC9D71).withOpacity(1)
-                            : const Color(0xFFAC9D71).withOpacity(0.42),
-                        shape: const CircleBorder(),
-                        padding: const EdgeInsets.all(50),
-                      ),
-                      child: const Text('1', style: TextStyle(fontSize: 48, color: Colors.white)),
-                      onPressed: () {
-                        context.read<TextBloc>().add(Text1Selected());
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: isText2Selected
-                            ? const Color(0xFFAC9D71).withOpacity(1)
-                            : const Color(0xFFAC9D71).withOpacity(0.42),
-                        shape: const CircleBorder(),
-                        padding: const EdgeInsets.all(50),
-                      ),
-                      child: const Text('2', style: TextStyle(fontSize: 48, color: Colors.white)),
-                      onPressed: () {
-                        context.read<TextBloc>().add(Text2Selected());
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ),
-                ],
-              ),
+  // Method to build the drawer widget
+  Widget _buildDrawer(BuildContext context) {
+    return BlocBuilder<TextBloc, TextState>(
+      builder: (context, state) {
+        final bool isText1Selected = state is TextLoadSuccess && !state.isText2Selected;
+        final bool isText2Selected = state is TextLoadSuccess && state.isText2Selected;
+
+        var text1Button = ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: isText1Selected
+                ? const Color(0xFFAC9D71).withOpacity(1)
+                : const Color(0xFFAC9D71).withOpacity(0.42),
+            shape: const CircleBorder(),
+            padding: const EdgeInsets.all(50),
+          ),
+          child: const Text('1', style: TextStyle(fontSize: 48, color: Colors.white)),
+          onPressed: () {
+            context.read<TextBloc>().add(Text1Selected());
+            Navigator.pop(context);
+          },
+        );
+
+        var text2Button = ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: isText2Selected
+                ? const Color(0xFFAC9D71).withOpacity(1)
+                : const Color(0xFFAC9D71).withOpacity(0.42),
+            shape: const CircleBorder(),
+            padding: const EdgeInsets.all(50),
+          ),
+          child: const Text('2', style: TextStyle(fontSize: 48, color: Colors.white)),
+          onPressed: () {
+            context.read<TextBloc>().add(Text2Selected());
+            Navigator.pop(context);
+          },
+        );
+
+        return Drawer(
+          child: Container(
+            color: Colors.white,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(padding: const EdgeInsets.all(8), child: text1Button),
+                Padding(padding: const EdgeInsets.all(8), child: text2Button),
+              ],
             ),
-          );
-        },
-      ),
-      body: BlocBuilder<TextBloc, TextState>(
-        builder: (context, state) {
-          if (state is TextLoadInProgress) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is TextLoadSuccess) {
-            const textStyle = TextStyle(fontSize: 16);
-            const headlineStyle = TextStyle(fontSize: 36, fontWeight: FontWeight.bold);
+          ),
+        );
+      },
+    );
+  }
 
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Text.rich(
-                TextSpan(
-                  children: [
-                    TextSpan(
-                      text: state.isText2Selected ? 'Headline 2\n\n' : 'Headline 1\n\n',
-                      style: headlineStyle,
-                    ),
-                    TextSpan(
-                      text: state.isText2Selected ? state.text2 : state.text1,
-                      style: textStyle,
-                    ),
-                  ],
-                ),
-              ),
-            );
-          } else if (state is TextLoadFailure) {
-            return const Center(child: Text('Failed to load texts'));
-          } else {
-            return const Center(child: Text('Unexpected error'));
-          }
-        },
+  // Method to build the body widget
+  Widget _buildBody(BuildContext context) {
+    return BlocBuilder<TextBloc, TextState>(
+      builder: (context, state) {
+        if (state is TextLoadInProgress) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is TextLoadSuccess) {
+          return _buildContent(state);
+        } else if (state is TextLoadFailure) {
+          return const Center(child: Text('Failed to load texts'));
+        } else {
+          return const Center(child: Text('Unexpected error'));
+        }
+      },
+    );
+  }
+
+  // Method to build the content widget
+  Widget _buildContent(TextLoadSuccess state) {
+    const TextStyle textStyle = TextStyle(fontSize: 16);
+    const TextStyle headlineStyle = TextStyle(fontSize: 36, fontWeight: FontWeight.bold);
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Text.rich(
+        TextSpan(
+          children: [
+            TextSpan(
+              text: state.isText2Selected ? 'Headline 2\n\n' : 'Headline 1\n\n',
+              style: headlineStyle,
+            ),
+            TextSpan(
+              text: state.isText2Selected ? state.text2 : state.text1,
+              style: textStyle,
+            ),
+          ],
+        ),
       ),
     );
   }

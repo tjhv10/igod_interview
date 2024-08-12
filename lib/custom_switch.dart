@@ -3,19 +3,24 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'switch_bloc.dart'; // Import the SwitchBloc file
 import 'text_bloc.dart'; // Import the TextBloc file
 
+/// [CustomSwitch]
+/// -------------
+/// A custom switch widget that toggles between two texts.
+/// The widget responds to the state of the [TextBloc] and [SwitchBloc].
 class CustomSwitch extends StatelessWidget {
   const CustomSwitch({super.key});
 
   @override
   Widget build(BuildContext context) {
-    const double opacity = 0.58; 
+    const double opacity = 0.58;
+
     return BlocBuilder<TextBloc, TextState>(
-      builder: (context, textState) {
+      builder: (BuildContext context, TextState textState) {
         if (textState is TextLoadSuccess) {
-          bool isSwitched = textState.isText2Selected;
+          final bool isSwitched = textState.isText2Selected;
 
           return BlocBuilder<SwitchBloc, SwitchState>(
-            builder: (context, switchState) {
+            builder: (BuildContext context, SwitchState switchState) {
               return GestureDetector(
                 onTap: () {
                   context.read<TextBloc>().add(
@@ -63,9 +68,8 @@ class CustomSwitch extends StatelessWidget {
             },
           );
         }
-        return const SizedBox.shrink(); // Return an empty widget if state is not `TextLoadSuccess`
+        return const SizedBox.shrink();
       },
     );
   }
 }
-
