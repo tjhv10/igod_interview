@@ -1,4 +1,6 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bloc/bloc.dart';
+import 'package:http/http.dart' as http;
+import 'package:xml/xml.dart';
 
 /// [TextEvent]
 /// -------------
@@ -66,18 +68,26 @@ class TextBloc extends Bloc<TextEvent, TextState> {
   Future<void> _onTextFetched(TextFetched event, Emitter<TextState> emit) async {
     emit(TextLoadInProgress());
     try {
-      final String text1 = List.generate(
-        50,
-        (index) => 'This is line $index of text 1.',
-      ).join('\n');
+      final response = await http.get(Uri.parse('https://feeds.bbci.co.uk/news/rss.xml'));
 
-      final String text2 = List.generate(
-        50,
-        (index) => 'This is line $index of text 2.',
-      ).join('\n');
+      if (response.statusCode == 200) {
+        final document = XmlDocument.parse(response.body);
+        final items = document.findAllElements('item');
 
-      emit(TextLoadSuccess(text1: text1, text2: text2));
-    } catch (_) {
+        if (items.isNotEmpty) {
+          final text1 = items.elementAt(0).findElements('description').first.text;
+          final text2 = items.length > 1
+              ? items.elementAt(1).findElements('description').first.text
+              : 'No second item in the RSS feed';
+
+          emit(TextLoadSuccess(text1: text1, text2: text2));
+        } else {
+          emit(TextLoadFailure());
+        }
+      } else {
+        emit(TextLoadFailure());
+      }
+    } catch (e) {
       emit(TextLoadFailure());
     }
   }

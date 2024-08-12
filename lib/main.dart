@@ -42,13 +42,13 @@ class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
 
   // Constant value for opacity
-  static const double OPACITY = 0.58;
+  static const double opacity = 0.58;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFFAC9D71).withOpacity(OPACITY),
+        backgroundColor: const Color(0xFFAC9D71).withOpacity(opacity),
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
@@ -160,7 +160,7 @@ class MyHomePage extends StatelessWidget {
         TextSpan(
           children: [
             TextSpan(
-              text: state.isText2Selected ? 'Headline 2\n\n' : 'Headline 1\n\n',
+              text: state.isText2Selected ? 'Some text 2\n' : 'Some text 1\n',
               style: headlineStyle,
             ),
             TextSpan(
