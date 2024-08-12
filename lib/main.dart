@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'custom_switch.dart';
-import 'switch_bloc.dart';
 import 'text_bloc.dart';
 
 void main() {
@@ -27,9 +26,6 @@ class MyApp extends StatelessWidget {
         providers: [
           BlocProvider<TextBloc>(
             create: (context) => TextBloc()..add(TextFetched()),
-          ),
-          BlocProvider<SwitchBloc>(
-            create: (context) => SwitchBloc(),
           ),
         ],
         child: const MyHomePage(),
